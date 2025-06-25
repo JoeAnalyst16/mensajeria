@@ -1,473 +1,286 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+# 📦 Panel de Mensajería
 
-export default function MensajeriaPanel() {
-  const [usuario, setUsuario] = useState(null);
-  const [registro, setRegistro] = useState(false);
-  const [credenciales, setCredenciales] = useState({ 
-    email: "", 
-    password: "", 
-    rol: "mensajero" 
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+Sistema de gestión de documentos y mensajería interna para organizaciones, con control de acceso por roles y funcionalidades de registro, seguimiento y exportación.
 
-  const [registros, setRegistros] = useState([]);
-  const [form, setForm] = useState({
-    id: "",
-    tipo: "",
-    prioridad: "",
-    destino: "",
-    mensajero: "",
-    hora: "",
-    fecha: "",
-    observaciones: ""
-  });
+## 🚀 Características
 
-  // Simulación de autenticación (reemplaza las llamadas a Firebase)
-  useEffect(() => {
-    // Verificar si hay usuario en memoria
-    const storedUser = sessionStorage.getItem('currentUser');
-    if (storedUser) {
-      setUsuario(JSON.parse(storedUser));
-    }
-    
-    // Cargar registros guardados
-    const storedRegistros = sessionStorage.getItem('registros');
-    if (storedRegistros) {
-      setRegistros(JSON.parse(storedRegistros));
-    }
-  }, []);
+- **Sistema de autenticación** con roles diferenciados
+- **Gestión de documentos** con prioridades y seguimiento
+- **Control de acceso** basado en roles de usuario
+- **Exportación de datos** a formato CSV
+- **Interfaz responsive** adaptable a móviles y desktop
+- **Almacenamiento local** para persistencia de datos
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+## 👥 Roles de Usuario
 
-  const handleCredencialesChange = (field, value) => {
-    setCredenciales({ ...credenciales, [field]: value });
-  };
+### 🚚 Mensajero
+- Visualización de listado de documentos asignados
+- Consulta de detalles de entrega
 
-  const handleRegistro = async () => {
-    if (!form.id || !form.tipo || !form.fecha || !form.hora) {
-      setError("Por favor completa todos los campos obligatorios");
-      return;
-    }
+### 📋 Oficina de Partes
+- Registro de nuevos documentos
+- Visualización completa del listado
+- Asignación de mensajeros
 
-    setLoading(true);
-    setError("");
+### 👑 Administrador
+- Acceso completo a todas las funciones
+- Exportación de registros a CSV
+- Gestión de usuarios y documentos
 
-    try {
-      // Simular guardado
-      const nuevoRegistro = { 
-        ...form, 
-        id: form.id || Date.now().toString(),
-        timestamp: new Date().toISOString()
-      };
-      
-      const nuevosRegistros = [...registros, nuevoRegistro];
-      setRegistros(nuevosRegistros);
-      
-      // Guardar en memoria
-      sessionStorage.setItem('registros', JSON.stringify(nuevosRegistros));
-      
-      // Limpiar formulario
-      setForm({ 
-        id: "", 
-        tipo: "", 
-        prioridad: "", 
-        destino: "", 
-        mensajero: "", 
-        hora: "", 
-        fecha: "", 
-        observaciones: "" 
-      });
-      
-      setError("");
-    } catch (error) {
-      setError("Error al registrar: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+## 🛠️ Tecnologías Utilizadas
 
-  const exportarCSV = () => {
-    if (registros.length === 0) {
-      setError("No hay registros para exportar");
-      return;
-    }
+- **React 18+** con Hooks
+- **Tailwind CSS** para estilos
+- **Shadcn/UI** componentes de interfaz
+- **SessionStorage** para persistencia local
+- **Lucide React** para iconografía
 
-    try {
-      const encabezados = "ID,Tipo,Prioridad,Destino,Mensajero,Fecha,Hora,Observaciones\n";
-      const filas = registros.map(r => 
-        `"${r.id}","${r.tipo}","${r.prioridad}","${r.destino}","${r.mensajero}","${r.fecha}","${r.hora}","${r.observaciones}"`
-      ).join("\n");
-      
-      const contenidoCSV = encabezados + filas;
-      const blob = new Blob([contenidoCSV], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `registro_mensajeria_${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      setError("Error al exportar CSV: " + error.message);
-    }
-  };
+## 📋 Requisitos Previos
 
-  const loginUsuario = async () => {
-    if (!credenciales.email || !credenciales.password) {
-      setError("Por favor completa email y contraseña");
-      return;
-    }
+- Node.js 16+ 
+- npm o yarn
+- Navegador moderno con soporte para ES6+
 
-    setLoading(true);
-    setError("");
+## ⚡ Instalación y Configuración
 
-    try {
-      // Simulación de login
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const usuarioData = {
-        uid: Date.now().toString(),
-        email: credenciales.email,
-        rol: credenciales.rol
-      };
-      
-      setUsuario(usuarioData);
-      sessionStorage.setItem('currentUser', JSON.stringify(usuarioData));
-      
-      setCredenciales({ email: "", password: "", rol: "mensajero" });
-    } catch (error) {
-      setError("Error al iniciar sesión: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/tu-usuario/panel-mensajeria.git
+cd panel-mensajeria
+```
 
-  const registrarUsuario = async () => {
-    if (!credenciales.email || !credenciales.password) {
-      setError("Por favor completa email y contraseña");
-      return;
-    }
+### 2. Instalar dependencias
+```bash
+npm install
+# o
+yarn install
+```
 
-    setLoading(true);
-    setError("");
+### 3. Instalar dependencias adicionales
+```bash
+# Shadcn/UI components
+npm install @/components/ui/card @/components/ui/button @/components/ui/input @/components/ui/textarea @/components/ui/tabs
 
-    try {
-      // Simulación de registro
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const usuarioData = {
-        uid: Date.now().toString(),
-        email: credenciales.email,
-        rol: credenciales.rol
-      };
-      
-      setUsuario(usuarioData);
-      sessionStorage.setItem('currentUser', JSON.stringify(usuarioData));
-      
-      setCredenciales({ email: "", password: "", rol: "mensajero" });
-      setRegistro(false);
-    } catch (error) {
-      setError("Error al registrar: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+# Iconos
+npm install lucide-react
+```
 
-  const cerrarSesion = () => {
-    setUsuario(null);
-    sessionStorage.removeItem('currentUser');
-    setCredenciales({ email: "", password: "", rol: "mensajero" });
-    setError("");
-  };
+### 4. Ejecutar la aplicación
+```bash
+npm start
+# o
+yarn start
+```
 
-  // Pantalla de login
-  if (!usuario) {
-    return (
-      <div className="p-8 bg-slate-900 min-h-screen text-green-400 flex flex-col items-center justify-center">
-        <div className="w-full max-w-md space-y-4">
-          <h2 className="text-2xl font-bold mb-6 text-center">🔐 Acceso al Panel de Mensajería</h2>
-          
-          {error && (
-            <div className="bg-red-900/50 text-red-200 p-3 rounded border border-red-700">
-              {error}
-            </div>
-          )}
-          
-          <Input 
-            placeholder="Email" 
-            type="email"
-            value={credenciales.email} 
-            onChange={e => handleCredencialesChange('email', e.target.value)}
-            className="bg-slate-800 border-slate-700 text-green-400"
-            disabled={loading}
-          />
-          
-          <Input 
-            placeholder="Contraseña" 
-            type="password" 
-            value={credenciales.password} 
-            onChange={e => handleCredencialesChange('password', e.target.value)}
-            className="bg-slate-800 border-slate-700 text-green-400"
-            disabled={loading}
-          />
-          
-          {registro && (
-            <select 
-              className="w-full p-2 bg-slate-800 border border-slate-700 text-green-400 rounded"
-              value={credenciales.rol} 
-              onChange={e => handleCredencialesChange('rol', e.target.value)}
-              disabled={loading}
-            >
-              <option value="mensajero">Mensajero</option>
-              <option value="oficina_partes">Oficina de Partes</option>
-              <option value="admin">Administrador</option>
-            </select>
-          )}
-          
-          <div className="flex gap-2">
-            <Button 
-              onClick={() => registro ? registrarUsuario() : loginUsuario()} 
-              className="bg-green-600 hover:bg-green-700 text-white flex-1"
-              disabled={loading}
-            >
-              {loading ? "Procesando..." : (registro ? "Registrar" : "Iniciar Sesión")}
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setRegistro(!registro);
-                setError("");
-              }}
-              className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
-              disabled={loading}
-            >
-              {registro ? "Ya tengo cuenta" : "Registrarme"}
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+La aplicación estará disponible en `http://localhost:3000`
 
-  // Panel principal
-  return (
-    <div className="p-4 bg-slate-900 min-h-screen text-green-400">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">📦 Panel de Mensajería</h1>
-          <p className="text-green-300">Usuario: {usuario.email} | Rol: {usuario.rol}</p>
-        </div>
-        <Button 
-          className="bg-red-600 hover:bg-red-700 text-white" 
-          onClick={cerrarSesion}
-        >
-          Cerrar Sesión
-        </Button>
-      </div>
+## 🎯 Guía de Uso
 
-      {error && (
-        <div className="bg-red-900/50 text-red-200 p-3 rounded border border-red-700 mb-4">
-          {error}
-        </div>
-      )}
+### Primer Acceso
+1. **Acceder a la aplicación** en tu navegador
+2. **Crear cuenta** haciendo clic en "Registrarme"
+3. **Completar datos** (email, contraseña, rol)
+4. **Iniciar sesión** con las credenciales creadas
 
-      <Tabs defaultValue={usuario.rol === "mensajero" ? "listado" : "registro"} className="w-full">
-        <TabsList className="bg-slate-800">
-          {usuario.rol !== "mensajero" && (
-            <TabsTrigger value="registro" className="data-[state=active]:bg-green-600">
-              📥 Registrar
-            </TabsTrigger>
-          )}
-          <TabsTrigger value="listado" className="data-[state=active]:bg-green-600">
-            📋 Listado
-          </TabsTrigger>
-        </TabsList>
+### Registro de Documentos
+1. **Navegar** a la pestaña "Registrar" (solo oficina de partes y admin)
+2. **Completar formulario**:
+   - ID del documento
+   - Tipo (Legal, General, etc.)
+   - Prioridad (Alta, Media, Baja)
+   - Destino o acción
+   - Mensajero asignado
+   - Fecha y hora
+   - Observaciones
+3. **Guardar** el registro
 
-        {usuario.rol !== "mensajero" && (
-          <TabsContent value="registro">
-            <Card className="bg-slate-800 border-slate-700 mt-4">
-              <CardContent className="space-y-4 p-6">
-                <h3 className="text-xl font-semibold text-green-400 mb-4">Nuevo Registro</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input 
-                    name="id" 
-                    placeholder="ID del documento" 
-                    value={form.id} 
-                    onChange={handleChange}
-                    className="bg-slate-700 border-slate-600 text-green-400"
-                    disabled={loading}
-                  />
-                  
-                  <Input 
-                    name="tipo" 
-                    placeholder="Tipo de documento (Legal, General, etc.)" 
-                    value={form.tipo} 
-                    onChange={handleChange}
-                    className="bg-slate-700 border-slate-600 text-green-400"
-                    disabled={loading}
-                  />
-                  
-                  <select
-                    name="prioridad"
-                    value={form.prioridad}
-                    onChange={handleChange}
-                    className="p-2 bg-slate-700 border border-slate-600 text-green-400 rounded"
-                    disabled={loading}
-                  >
-                    <option value="">Seleccionar prioridad</option>
-                    <option value="Alta">Alta</option>
-                    <option value="Media">Media</option>
-                    <option value="Baja">Baja</option>
-                  </select>
-                  
-                  <Input 
-                    name="destino" 
-                    placeholder="Destino o Acción" 
-                    value={form.destino} 
-                    onChange={handleChange}
-                    className="bg-slate-700 border-slate-600 text-green-400"
-                    disabled={loading}
-                  />
-                  
-                  <Input 
-                    name="mensajero" 
-                    placeholder="Mensajero asignado" 
-                    value={form.mensajero} 
-                    onChange={handleChange}
-                    className="bg-slate-700 border-slate-600 text-green-400"
-                    disabled={loading}
-                  />
-                  
-                  <Input 
-                    name="fecha" 
-                    type="date" 
-                    value={form.fecha} 
-                    onChange={handleChange}
-                    className="bg-slate-700 border-slate-600 text-green-400"
-                    disabled={loading}
-                  />
-                  
-                  <Input 
-                    name="hora" 
-                    type="time" 
-                    value={form.hora} 
-                    onChange={handleChange}
-                    className="bg-slate-700 border-slate-600 text-green-400"
-                    disabled={loading}
-                  />
-                </div>
-                
-                <Textarea 
-                  name="observaciones" 
-                  placeholder="Observaciones adicionales" 
-                  value={form.observaciones} 
-                  onChange={handleChange}
-                  className="bg-slate-700 border-slate-600 text-green-400"
-                  disabled={loading}
-                />
-                
-                <Button 
-                  className="bg-green-600 hover:bg-green-700 text-white w-full"
-                  onClick={handleRegistro}
-                  disabled={loading}
-                >
-                  {loading ? "Registrando..." : "Registrar Documento"}
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
+### Consulta y Exportación
+1. **Ver listado** en la pestaña correspondiente
+2. **Filtrar** por prioridad (colores diferenciados)
+3. **Exportar CSV** (solo administradores)
 
-        <TabsContent value="listado">
-          <div className="mt-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Registros de Mensajería</h3>
-              {usuario.rol === "admin" && (
-                <Button 
-                  className="bg-green-600 hover:bg-green-700 text-white" 
-                  onClick={exportarCSV}
-                  disabled={registros.length === 0}
-                >
-                  📤 Exportar CSV ({registros.length})
-                </Button>
-              )}
-            </div>
-            
-            {registros.length === 0 ? (
-              <Card className="bg-slate-800 border-slate-700">
-                <CardContent className="p-6 text-center">
-                  <p className="text-green-300">No hay registros disponibles.</p>
-                  {usuario.rol !== "mensajero" && (
-                    <p className="text-sm text-green-400 mt-2">
-                      Usa la pestaña "Registrar" para agregar nuevos documentos.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-3">
-                {registros.map((registro, index) => (
-                  <Card key={index} className="bg-slate-800 border-slate-700">
-                    <CardContent className="p-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-                        <div>
-                          <span className="font-semibold text-green-300">ID:</span>
-                          <p className="text-green-400">{registro.id}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-green-300">Tipo:</span>
-                          <p className="text-green-400">{registro.tipo}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-green-300">Prioridad:</span>
-                          <p className={`font-medium ${
-                            registro.prioridad === 'Alta' ? 'text-red-400' :
-                            registro.prioridad === 'Media' ? 'text-yellow-400' :
-                            'text-green-400'
-                          }`}>
-                            {registro.prioridad}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-green-300">Destino:</span>
-                          <p className="text-green-400">{registro.destino}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-green-300">Mensajero:</span>
-                          <p className="text-green-400">{registro.mensajero}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-green-300">Fecha:</span>
-                          <p className="text-green-400">{registro.fecha}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-green-300">Hora:</span>
-                          <p className="text-green-400">{registro.hora}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-green-300">Observaciones:</span>
-                          <p className="text-green-400">{registro.observaciones || "Sin observaciones"}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
+## 📊 Estructura de Datos
+
+### Usuario
+```javascript
+{
+  uid: "string",
+  email: "user@example.com",
+  rol: "mensajero" | "oficina_partes" | "admin"
 }
+```
+
+### Documento/Registro
+```javascript
+{
+  id: "string",
+  tipo: "string",
+  prioridad: "Alta" | "Media" | "Baja",
+  destino: "string",
+  mensajero: "string",
+  fecha: "YYYY-MM-DD",
+  hora: "HH:MM",
+  observaciones: "string",
+  timestamp: "ISO_DATE_STRING"
+}
+```
+
+## 🎨 Personalización
+
+### Colores del Tema
+```css
+/* Colores principales */
+--color-primary: #22c55e      /* Verde */
+--color-background: #0f172a   /* Azul oscuro */
+--color-secondary: #1e293b    /* Gris azulado */
+
+/* Prioridades */
+--color-high: #ef4444         /* Rojo - Alta */
+--color-medium: #eab308       /* Amarillo - Media */
+--color-low: #22c55e          /* Verde - Baja */
+```
+
+### Agregar Nuevos Campos
+1. **Actualizar estado del formulario**:
+```javascript
+const [form, setForm] = useState({
+  // ... campos existentes
+  nuevoCampo: ""
+});
+```
+
+2. **Agregar input en el JSX**:
+```jsx
+<Input 
+  name="nuevoCampo" 
+  placeholder="Nuevo Campo" 
+  value={form.nuevoCampo} 
+  onChange={handleChange}
+/>
+```
+
+3. **Incluir en exportación CSV**:
+```javascript
+const encabezados = "ID,Tipo,...,NuevoCampo\n";
+```
+
+## 🔧 Configuración Avanzada
+
+### Variables de Entorno
+Crear archivo `.env.local`:
+```env
+REACT_APP_VERSION=1.0.0
+REACT_APP_COMPANY_NAME=Tu Empresa
+REACT_APP_EXPORT_LIMIT=1000
+```
+
+### Límites y Validaciones
+```javascript
+// En MensajeriaPanel.jsx
+const LIMITS = {
+  maxRecords: 1000,
+  maxFileSize: '5MB',
+  allowedRoles: ['mensajero', 'oficina_partes', 'admin']
+};
+```
+
+## 📱 Responsive Design
+
+La aplicación se adapta automáticamente a:
+- **Desktop**: Grid completo con múltiples columnas
+- **Tablet**: Grid adaptativo 2-3 columnas
+- **Mobile**: Layout vertical de una columna
+
+## 🔐 Seguridad
+
+### Características Implementadas
+- ✅ Control de acceso por roles
+- ✅ Validación de formularios
+- ✅ Escape de caracteres en CSV
+- ✅ Sanitización de inputs
+- ✅ Sesiones temporales (sessionStorage)
+
+### Recomendaciones para Producción
+- Implementar autenticación JWT
+- Usar HTTPS en todas las comunicaciones
+- Validación server-side
+- Rate limiting para APIs
+- Logging de actividades
+
+## 🐛 Solución de Problemas
+
+### Error: "Component not found"
+```bash
+# Reinstalar dependencias de UI
+npm install @/components/ui/*
+```
+
+### Error: "SessionStorage not available"
+- Verificar que el navegador soporte sessionStorage
+- Revisar configuración de privacidad del navegador
+
+### Performance: App lenta con muchos registros
+```javascript
+// Implementar paginación
+const ITEMS_PER_PAGE = 50;
+const [currentPage, setCurrentPage] = useState(1);
+```
+
+## 📈 Roadmap
+
+### Versión 2.0
+- [ ] Integración con base de datos real
+- [ ] Notificaciones push
+- [ ] Historial de cambios
+- [ ] Búsqueda avanzada
+- [ ] Informes y gráficos
+
+### Versión 2.1
+- [ ] API REST completa
+- [ ] Aplicación móvil nativa
+- [ ] Sincronización offline
+- [ ] Multi-tenancy
+
+## 🤝 Contribución
+
+1. **Fork** el proyecto
+2. **Crear rama** para tu feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** a la rama (`git push origin feature/AmazingFeature`)
+5. **Abrir Pull Request**
+
+### Estándares de Código
+- Usar ESLint y Prettier
+- Comentarios en español
+- Tests unitarios para nuevas funciones
+- Documentación actualizada
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## 👨‍💻 Autor
+
+**Tu Nombre**
+- GitHub: [@tu-usuario](https://github.com/tu-usuario)
+- Email: tu-email@ejemplo.com
+- LinkedIn: [Tu Perfil](https://linkedin.com/in/tu-perfil)
+
+## 🙏 Reconocimientos
+
+- [Shadcn/UI](https://ui.shadcn.com/) por los componentes de interfaz
+- [Tailwind CSS](https://tailwindcss.com/) por el sistema de estilos
+- [Lucide](https://lucide.dev/) por los iconos
+- [React](https://reactjs.org/) por el framework
+
+## 📞 Soporte
+
+Si encuentras algún problema o tienes preguntas:
+
+1. **Revisar** la sección de [Issues](https://github.com/tu-usuario/panel-mensajeria/issues)
+2. **Crear** un nuevo issue si no existe
+3. **Contactar** directamente al autor
+
+---
+
+⭐ **Si este proyecto te fue útil, no olvides darle una estrella en GitHub!**
